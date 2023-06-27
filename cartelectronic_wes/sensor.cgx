@@ -1,0 +1,57 @@
+t <data>
+t <info>
+c h d <date>%02d/%02d/%02d</date>
+c h h <time>%02d:%02d</time>
+c v h <hardware>%s</hardware>
+c v v <firmware>%s</firmware>
+c r a <serial>%02X%02X%02X%02X%02X%02X</serial>
+c ff  <storage>%0.03f</storage>
+t </info>
+t <clamps>
+t <clamp1>
+c Pa1 <enabled>%d</enabled>
+c Pn1 <name>%s</name>
+c PPU1 <power>%s</power>
+c P A1 <I>%.02f</I>
+c P W1 <index>%.03f</index>
+c PIt1 <idxinject>%.03f</idxinject>
+c PPi1 <modinject>%d</modinject>
+t </clamp1>
+t <clamp2>
+c Pa2 <enabled>%d</enabled>
+c Pn2 <name>%s</name>
+c PPU2 <power>%s</power>
+c P A2 <I>%.02f</I>
+c P W2 <index>%.03f</index>
+c PIt2 <idxinject>%.03f</idxinject>
+c PPi2 <modinject>%d</modinject>
+t </clamp2>
+t <clamp3>
+c Pa3 <enabled>%d</enabled>
+c Pn3 <name>%s</name>
+c PPU3 <power>%s</power>
+c P A3 <I>%.02f</I>
+c P W3 <index>%.03f</index>
+c PIt3 <idxinject>%.03f</idxinject>
+c PPi3 <modinject>%d</modinject>
+t </clamp3>
+t <clamp4>
+c Pa4 <enabled>%d</enabled>
+c Pn4 <name>%s</name>
+c PPU4 <power>%s</power>
+c P A4 <I>%.02f</I>
+c P W4 <index>%.03f</index>
+c PIt4 <idxinject>%.03f</idxinject>
+c PPi4 <modinject>%d</modinject>
+t </clamp4>
+c PVV  <V>%d</V>
+t </clamps>
+t <relays>
+t <relay1>
+c o E1 <enabled>%d</enabled>
+t </relay1>
+t <relay2>
+c o E2 <enabled>%d</enabled>
+t </relay2>
+t </relays>
+t </data>

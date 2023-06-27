@@ -1,0 +1,24 @@
+{
+    "config": {
+      "step": {
+        "user": {
+          "title": "Ajout du compte web",
+          "description": "Saisie des identifiants administrateur ou utilisateur du WES",
+          "data": {
+            "host": "Addresse du WES",
+            "username": "Utilisateur",
+            "password": "Mot de passe",
+            "delay": "Delai entre chaque relevés"
+          }
+        },
+        "ftp": {
+          "title": "Utilisateur FTP",
+          "description": "Saisie de l'utilisateur FTP pour ajout d'un fichier de récupérations des informations des capteurs",
+          "data": {
+            "username": "Utilisateur FTP",
+            "password": "Mot de passe FTP"
+          }
+        }
+      }
+    }
+  }

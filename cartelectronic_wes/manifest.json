@@ -1,0 +1,12 @@
+{
+    "domain": "cartelectronic_wes",
+    "name": "cartelectronic WES",
+    "codeowners": ["dduransseau"],
+    "dependencies": ["http"],
+    "documentation": "",
+    "config_flow": true,
+    "integration_type": "hub",
+    "iot_class": "local_polling",
+    "requirements": ["aiohttp>=3.8", "xmltodict"],
+    "version": "0.1.0"
+  }
