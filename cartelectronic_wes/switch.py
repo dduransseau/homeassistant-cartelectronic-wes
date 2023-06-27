@@ -65,12 +65,14 @@ class RelaySwitch(SwitchEntity, CoordinatorEntity):
         _LOGGER.debug(f"Turn off wes relay {self.__id}")
         if await self.hub.switch_relay(self.__id, on=False):
             self._is_on = False
+            self.async_write_ha_state()
 
     async def async_turn_on(self, **kwargs):
         """Turn the entity on."""
         _LOGGER.debug(f"Turn on wes relay {self.__id}")
         if await self.hub.switch_relay(self.__id, on=True):
             self._is_on = True
+            self.async_write_ha_state()
 
     async def async_toggle(self, **kwargs):
         _LOGGER.debug(f"Toggle wes relay {self.__id}")
