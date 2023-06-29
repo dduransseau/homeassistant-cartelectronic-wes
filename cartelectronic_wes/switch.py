@@ -48,8 +48,7 @@ class RelaySwitch(SwitchEntity, CoordinatorEntity):
             manufacturer=device.manufacturer_name,
             model=device.model,
             sw_version=device.sw_version,
-            hw_version=device.hw_version,
-            via_device=(DOMAIN, device.serial),
+            hw_version=device.hw_version
         )
 
     @property
