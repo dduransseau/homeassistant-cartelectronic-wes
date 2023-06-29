@@ -37,35 +37,49 @@ class WesApi:
         self.user = user
         self.__password = password
         self.__auth = aiohttp.BasicAuth(self.user, password=self.__password)
-        if session:
-            self.client = session
-            self.shared_session = True
-        else:
-            self.client = aiohttp.ClientSession()
-            self.shared_session = False
+        self._setup_session(session)
         self._admin = None
         self.device = None
         self.SENSOR_FILENAME = sensor_filename
 
     def __del__(self):
-        if not self.shared_session:
+        if self._self_session:
             try:
-                loop = asyncio.get_running_loop()
+                loop = asyncio.get_event_loop()
                 if loop.is_running():
-                    loop.create_task(self.client.close())
+                    loop.create_task(self._self_session.close())
                 else:
-                    loop.run_until_complete(self.client.close())
+                    loop.run_until_complete(self._self_session.close())
             except:
                 pass
 
-    async def fetch_url(self, url):
-        absolute_url = urljoin(self.url, url)
-        async with self.client.get(absolute_url, auth=self.__auth) as response:
+    def _setup_session(self, session=None):
+        self._global_session = None
+        self._self_session = None
+        if session:
+            self._global_session = session
+            self.client = self._global_session
+        else:
+            self._self_session = aiohttp.ClientSession()
+            self.client = self._self_session
+    
+    def get_absolute_url(self, url):
+        if url.startswith("http://"):
+            return url
+        else:
+            return urljoin(self.url, url)
+        
+    @property
+    def ajax_url(self):
+        return self.get_absolute_url(AJAX_URL)
+
+    async def fetch_url(self, url, params=None):
+        logger.debug(f"Send query to {url} with params {params}")
+        async with self.client.get(self.get_absolute_url(url), auth=self.__auth, params=params) as response:
             return response
 
     async def fetch_xml_data(self, url):
-        absolute_url = urljoin(self.url, url)
-        async with self.client.get(absolute_url, auth=self.__auth) as response:
+        async with self.client.get(self.get_absolute_url(url), auth=self.__auth) as response:
             if response.status == 200:
                 response_text = await response.text()
                 data = xmltodict.parse(response_text)
@@ -76,6 +90,14 @@ class WesApi:
                     logger.warning("Unable to retrieve data from response")
             else:
                 logger.warning(f"Unable to retrieve {response}")
+    
+    async def ajax_command(self, params):
+        response = await self.fetch_url(self.ajax_url, params=params)
+        if response.status == 200:
+            return True
+        else:
+            logger.warning(f"Unable to process request, status {response.status}")
+            return False
 
     async def fetch_data(self):
         return await self.fetch_xml_data(DATA_URL)
@@ -111,28 +133,21 @@ class WesApi:
 
     async def switch_relay(self, id, on=True):
         value = "ON" if on else "OFF"
-        absolute_url = urljoin(self.url, AJAX_URL)
         logger.debug(f"Switch relay {id} {value}")
         params = {f'rl{id}': value}
-        logger.debug(f"Send query to {absolute_url} with params {params}")
-        async with self.client.get(absolute_url, params=params, auth=self.__auth) as response:
-            if response.status == 200:
-                return True
-            else:
-                logger.warning(f"Unable to switch relay, status {response.status}")
-                return False
+        return await self.ajax_command(params)
             
     async def toggle_relay(self, id):
         logger.debug(f"Toggle relay {id}")
-        absolute_url = urljoin(self.url, AJAX_URL)
         params = {f'frl': id}
-        logger.debug(f"Send query to {absolute_url} with params {params}")
-        async with self.client.get(absolute_url, params=params, auth=self.__auth) as response:
-            if response.status == 200:
-                return True
-            else:
-                logger.warning(f"Unable to toggle relay, status {response.status}")
-                return False
+        return await self.ajax_command(params)
+            
+    async def reset_server(self):
+        try:
+            params = {f'reset': "yes"}
+            return await self.ajax_command(params)
+        except aiohttp.client_exceptions.ClientOSError:
+            return True
 
     @property
     def serial(self):
