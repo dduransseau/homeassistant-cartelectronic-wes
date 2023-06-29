@@ -40,6 +40,12 @@ def setup_clamps_sensors(coordinator):
             
     return entities_sensors
 
+def setup_1wire_probe(coordinator):
+    entities_sensors = list()
+    for i in range(1, 31):
+        entities_sensors.append(Probe1WireSensor(coordinator, id=i))
+    return entities_sensors
+
 async def async_setup_entry(
     hass: core.HomeAssistant,
     config_entry: config_entries.ConfigEntry,
@@ -52,6 +58,7 @@ async def async_setup_entry(
 
     # Create sensors for clamp objects
     entities_sensors = setup_clamps_sensors(coordinator)
+    entities_sensors += setup_1wire_probe(coordinator)
 
     async_add_entities(entities_sensors)
 
@@ -77,8 +84,7 @@ class BaseWesSensor(CoordinatorEntity, SensorEntity):
             manufacturer=device.manufacturer_name,
             model=device.model,
             sw_version=device.sw_version,
-            hw_version=device.hw_version,
-            via_device=(DOMAIN, device.serial),
+            hw_version=device.hw_version
         )
 
     @property
@@ -100,7 +106,7 @@ class ClampCurrentSensor(BaseClampSensor):
         """Pass coordinator to CoordinatorEntity."""
         super().__init__(coordinator, **kwargs)
         self.__id = id
-        self._attr_name = f"Clamp{self.__id} current"
+        self._attr_name = f"clamp{self.__id} current"
         self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_clamp{self.__id}_current"
 
     @callback
@@ -120,7 +126,7 @@ class ClampVoltageSensor(BaseClampSensor):
     def __init__(self, coordinator, **kwargs):
         """Pass coordinator to CoordinatorEntity."""
         super().__init__(coordinator, **kwargs)
-        self._attr_name = f"Main voltage"
+        self._attr_name = f"main voltage"
         self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_main_voltage"
 
     @callback
@@ -143,10 +149,10 @@ class ClampIndexSensor(BaseClampSensor):
         self._state = None
         self.inject = inject
         if self.inject:
-            self._attr_name = f"Clamp{self.__id} inject index"
+            self._attr_name = f"clamp{self.__id} inject index"
             self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_clamp{self.__id}_inject_index"
         else:
-            self._attr_name = f"Clamp{self.__id} consumption index"
+            self._attr_name = f"clamp{self.__id} consumption index"
             self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_clamp{self.__id}_consumption_index"
 
     @callback
@@ -178,12 +184,12 @@ class ClampPowerSensor(BaseClampSensor):
         if self.apparent_power:
             self._attr_native_unit_of_measurement = UnitOfApparentPower.VOLT_AMPERE
             self._attr_device_class = SensorDeviceClass.APPARENT_POWER
-            self._attr_name = f"Clamp{self.__id} apparent power"
+            self._attr_name = f"clamp{self.__id} apparent power"
             self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_clamp{self.__id}_apparent_power"
         else:
             self._attr_native_unit_of_measurement = UnitOfPower.WATT
             self._attr_device_class = SensorDeviceClass.POWER
-            self._attr_name = f"Clamp{self.__id} power"
+            self._attr_name = f"clamp{self.__id} power"
             self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_clamp{self.__id}_power"
     
     @callback
@@ -201,15 +207,15 @@ class ClampPowerSensor(BaseClampSensor):
                     self._state = value.get("va")
             self.async_write_ha_state()
             
-class Probe1Wire(BaseWesSensor):
+class Probe1WireSensor(BaseWesSensor):
     _attr_state_class = SensorStateClass.MEASUREMENT
 
     def __init__(self, coordinator, id=1, **kwargs):
         """Pass coordinator to CoordinatorEntity."""
         super().__init__(coordinator, **kwargs)
         self.__id = id
-        self._attr_name = f"Probe{self.__id}"
-        self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_{self._attr_name}"
+        self._attr_name = f"probe{self.__id}"
+        self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_{self._attr_name}".lower()
 
     @callback
     def _handle_coordinator_update(self) -> None:
