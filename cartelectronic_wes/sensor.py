@@ -55,10 +55,9 @@ async def async_setup_entry(
 
     async_add_entities(entities_sensors)
 
-class BaseClampSensor(CoordinatorEntity, SensorEntity):
+class BaseWesSensor(CoordinatorEntity, SensorEntity):
     _attr_has_entity_name = True
     _attr_attribution = "WES from Cartelectronic"
-    _attr_device_class = SensorDeviceClass.ENERGY
 
     def __init__(self, coordinator, available=True, **kwargs):
         """Pass coordinator to CoordinatorEntity."""
@@ -87,6 +86,12 @@ class BaseClampSensor(CoordinatorEntity, SensorEntity):
         """Return the state of the sensor."""
         return self._state
 
+class BaseClampSensor(BaseWesSensor):
+    _attr_device_class = SensorDeviceClass.ENERGY
+
+    def __init__(self, coordinator, **kwargs):
+        """Pass coordinator to CoordinatorEntity."""
+        super().__init__(coordinator, **kwargs)
 
 class ClampCurrentSensor(BaseClampSensor):
     _attr_native_unit_of_measurement = UnitOfElectricCurrent.AMPERE
@@ -196,3 +201,21 @@ class ClampPowerSensor(BaseClampSensor):
                     self._state = value.get("va")
             self.async_write_ha_state()
             
+class Probe1Wire(BaseWesSensor):
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(self, coordinator, id=1, **kwargs):
+        """Pass coordinator to CoordinatorEntity."""
+        super().__init__(coordinator, **kwargs)
+        self.__id = id
+        self._attr_name = f"Probe{self.__id}"
+        self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_{self._attr_name}"
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        clamps_data = self.coordinator.data.get("probes")
+        clamp_data = clamps_data.get(f"probe{self.__id}")
+        if clamp_data:
+            self._state = clamp_data
+            self.async_write_ha_state()

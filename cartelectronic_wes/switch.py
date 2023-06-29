@@ -30,8 +30,8 @@ class RelaySwitch(SwitchEntity, CoordinatorEntity):
     def __init__(self,coordinator, id):
         super().__init__(coordinator)
         self.coordinator = coordinator
-        self.hub = coordinator.api
-        self.serial_number = self.hub.serial
+        self.api = coordinator.api
+        self.serial_number = self.api.serial
         self.__id = id
         self._attr_name = f"Relay{self.__id}"
         self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_relay{self.__id}"
@@ -39,7 +39,7 @@ class RelaySwitch(SwitchEntity, CoordinatorEntity):
 
     @property
     def device_info(self) -> DeviceInfo:
-        device = self.hub.device
+        device = self.api.device
         return DeviceInfo(
             identifiers={
                 (DOMAIN, device.serial)
@@ -63,20 +63,20 @@ class RelaySwitch(SwitchEntity, CoordinatorEntity):
     async def async_turn_off(self, **kwargs):
         """Turn the entity off."""
         _LOGGER.debug(f"Turn off wes relay {self.__id}")
-        if await self.hub.switch_relay(self.__id, on=False):
+        if await self.api.switch_relay(self.__id, on=False):
             self._is_on = False
             self.async_write_ha_state()
 
     async def async_turn_on(self, **kwargs):
         """Turn the entity on."""
         _LOGGER.debug(f"Turn on wes relay {self.__id}")
-        if await self.hub.switch_relay(self.__id, on=True):
+        if await self.api.switch_relay(self.__id, on=True):
             self._is_on = True
             self.async_write_ha_state()
 
     async def async_toggle(self, **kwargs):
         _LOGGER.debug(f"Toggle wes relay {self.__id}")
-        return await self.hub.toggle_relay(self.__id)
+        return await self.api.toggle_relay(self.__id)
     
     @callback
     def _handle_coordinator_update(self) -> None:

@@ -54,4 +54,79 @@ t <relay2>
 c o E2 <enabled>%d</enabled>
 t </relay2>
 t </relays>
+t <intput>
+c l	E1 <intput1>%d</intput1>
+c l	E2 <intput2>%d</intput2>
+t </intput>
+t <analog>
+c la <ad1>%.02f</ad1><ad2>%.02f</ad2><ad3>%.02f</ad3><ad4>%.02f</ad4>
+t </analog>
+t <probes>
+c W0T0 <probe1>%.01f</probe1>
+c W0T1 <probe2>%.01f</probe2>
+c W0T2 <probe3>%.01f</probe3>
+c W0T3 <probe4>%.01f</probe4>
+c W0T4 <probe5>%.01f</probe5>
+c W0T5 <probe6>%.01f</probe6>
+c W0T6 <probe7>%.01f</probe7>
+c W0T7 <probe8>%.01f</probe8>
+c W0T8 <probe9>%.01f</probe9>
+c W0T9 <probe10>%.01f</probe10>
+c W1T0 <probe11>%.01f</probe11>
+c W1T1 <probe12>%.01f</probe12>
+c W1T2 <probe13>%.01f</probe13>
+c W1T3 <probe14>%.01f</probe14>
+c W1T4 <probe15>%.01f</probe15>
+c W1T5 <probe16>%.01f</probe16>
+c W1T6 <probe17>%.01f</probe17>
+c W1T7 <probe18>%.01f</probe18>
+c W1T8 <probe19>%.01f</probe19>
+c W1T9 <probe20>%.01f</probe20>
+c W2T0 <probe21>%.01f</probe21>
+c W2T1 <probe22>%.01f</probe22>
+c W2T2 <probe23>%.01f</probe23>
+c W2T3 <probe24>%.01f</probe24>
+c W2T4 <probe25>%.01f</probe25>
+c W2T5 <probe26>%.01f</probe26>
+c W2T6 <probe27>%.01f</probe27>
+c W2T7 <probe28>%.01f</probe28>
+c W2T8 <probe29>%.01f</probe29>
+c W2T9 <probe30>%.01f</probe30>
+t </probes>
+t <virtual_switch>
+c lSE1 <switch1>%d</switch1>
+c lSE2 <switch2>%d</switch2>
+c lSE3 <switch3>%d</switch3>
+c lSE4 <switch4>%d</switch4>
+c lSE5 <switch5>%d</switch5>
+c lSE6 <switch6>%d</switch6>
+c lSE7 <switch7>%d</switch7>
+c lSE8 <switch8>%d</switch8>
+c lSE9 <switch9>%d</switch9>
+c lSE10<switch10>%d</switch10>
+c lSE11<switch11>%d</switch11>
+c lSE12<switch12>%d</switch12>
+c lSE13<switch13>%d</switch13>
+c lSE14<switch14>%d</switch14>
+c lSE15<switch15>%d</switch15>
+c lSE16<switch16>%d</switch16>
+c lSE17<switch17>%d</switch17>
+c lSE18<switch18>%d</switch18>
+c lSE19<switch19>%d</switch19>
+c lSE20<switch20>%d</switch20>
+c lSE21<switch21>%d</switch21>
+c lSE22<switch22>%d</switch22>
+c lSE23<switch23>%d</switch23>
+c lSE24<switch24>%d</switch24>
+t </virtual_switch>
+t <variables>
+c Vv1 <variable1>%.02f</variable1>
+c Vv2 <variable2>%.02f</variable2>
+c Vv3 <variable3>%.02f</variable3>
+c Vv4 <variable4>%.02f</variable4>
+c Vv5 <variable5>%.02f</variable5>
+c Vv6 <variable6>%.02f</variable6>
+c Vv7 <variable7>%.02f</variable7>
+c Vv8 <variable8>%.02f</variable8>
+t </variables>
 t </data>
