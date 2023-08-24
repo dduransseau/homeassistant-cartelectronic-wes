@@ -7,6 +7,92 @@ c v v <firmware>%s</firmware>
 c r a <serial>%02X%02X%02X%02X%02X%02X</serial>
 c ff  <storage>%0.03f</storage>
 t </info>
+t <tics>
+t <tic1>
+c ea1 <ADCO>%s</ADCO>
+c eo1 <OPTARIF>%s.</OPTARIF>
+c eS1 <ISOUSC>%d</ISOUSC>
+c Tn1 <PTEC>%s</PTEC>
+c ip1 <PAP>%d</PAP>
+c ij1 <PAPIJ>%d</PAPIJ>
+c ii10<IINST>%d</IINST>
+c ii11<IINST1>%d</IINST1>
+c ii12<IINST2>%d</IINST2>
+c ii13<IINST3>%d</IINST3>
+c iu11<TENSION1>%lu</TENSION1>
+c iu12<TENSION2>%lu</TENSION2>
+c iu13<TENSION3>%lu</TENSION3>
+c iM10<IMAX>%d</IMAX>
+c iM11<IMAX1>%d</IMAX1>
+c iM12<IMAX2>%d</IMAX2>
+c iM13<IMAX3>%d</IMAX3>
+c Te1 <PEJP>%d</PEJP>
+c TD1 <DEMAIN>%s</DEMAIN>
+c Tb11<BASE>%09u</BASE>
+c TP1 <H_PLEINE>%09u</H_PLEINE>
+c TC1 <H_CREUSE>%09u</H_CREUSE>
+c Tj11<EJPHN>%09u</EJPHN>
+c Tj12<EJPHPM>%09u</EJPHPM>
+c Tr11<BBRHCJB>%09u</BBRHCJB>
+c Tr12<BBRHPJB>%09u</BBRHPJB>
+c Tr13<BBRHCJW>%09u</BBRHCJW>
+c Tr14<BBRHPJW>%09u</BBRHPJW>
+c Tr15<BBRHCJR>%09u</BBRHCJR>
+c Tr16<BBRHPJR>%09u</BBRHPJR>
+c Tw1 <H_WeekEnd>%09u</H_WeekEnd>
+c Tm11<HC_Semaine>%09u</HC_Semaine>
+c Tm12<HP_Semaine>%09u</HP_Semaine>
+c Tm13<HC_WeekEnd>%09u</HC_WeekEnd>
+c Tm14<HP_WeekEnd>%09u</HP_WeekEnd>
+c Tm15<HC_Mercredi>%09u</HC_Mercredi>
+c Tm16<HP_Mercredi>%09u</HP_Mercredi>
+c Ts1 <H_SUPER_CREUSE>%09u</H_SUPER_CREUSE>
+c Tp1 <PRODUCTEUR>%09u</PRODUCTEUR>
+c TJ1 <INJECTION>%09u</INJECTION>
+t </tic1>
+t <tic2>
+c ea2 <ADCO>%s</ADCO>
+c eo2 <OPTARIF>%s.</OPTARIF>
+c eS2 <ISOUSC>%d</ISOUSC>
+c Tn2 <PTEC>%s</PTEC>
+c ip2 <PAP>%d</PAP>
+c ij2 <PAPIJ>%d</PAPIJ>
+c ii20<IINST>%d</IINST>
+c ii21<IINST1>%d</IINST1>
+c ii22<IINST2>%d</IINST2>
+c ii23<IINST3>%d</IINST3>
+c iu21<TENSION1>%lu</TENSION1>
+c iu22<TENSION2>%lu</TENSION2>
+c iu23<TENSION3>%lu</TENSION3>
+c iM20<IMAX>%d</IMAX>
+c iM21<IMAX1>%d</IMAX1>
+c iM22<IMAX2>%d</IMAX2>
+c iM23<IMAX3>%d</IMAX3>
+c Te2 <PEJP>%d</PEJP>
+c TD2 <DEMAIN>%s</DEMAIN>
+c Tb21<BASE>%09u</BASE>
+c TP2 <H_PLEINE>%09u</H_PLEINE>
+c TC2 <H_CREUSE>%09u</H_CREUSE>
+c Tj21<EJPHN>%09u</EJPHN>
+c Tj22<EJPHPM>%09u</EJPHPM>
+c Tr21<BBRHCJB>%09u</BBRHCJB>
+c Tr22<BBRHPJB>%09u</BBRHPJB>
+c Tr23<BBRHCJW>%09u</BBRHCJW>
+c Tr24<BBRHPJW>%09u</BBRHPJW>
+c Tr25<BBRHCJR>%09u</BBRHCJR>
+c Tr26<BBRHPJR>%09u</BBRHPJR>
+c Tw2 <H_WeekEnd>%09u</H_WeekEnd>
+c Tm21<HC_Semaine>%09u</HC_Semaine>
+c Tm22<HP_Semaine>%09u</HP_Semaine>
+c Tm23<HC_WeekEnd>%09u</HC_WeekEnd>
+c Tm24<HP_WeekEnd>%09u</HP_WeekEnd>
+c Tm25<HC_Mercredi>%09u</HC_Mercredi>
+c Tm26<HP_Mercredi>%09u</HP_Mercredi>
+c Ts2 <H_SUPER_CREUSE>%09u</H_SUPER_CREUSE>
+c Tp2 <PRODUCTEUR>%09u</PRODUCTEUR>
+c TJ2 <INJECTION>%09u</INJECTION>
+t </tic2>
+t </tics>
 t <clamps>
 t <clamp1>
 c Pa1 <enabled>%d</enabled>
