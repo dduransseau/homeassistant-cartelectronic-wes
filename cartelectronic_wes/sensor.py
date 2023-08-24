@@ -15,10 +15,35 @@ from homeassistant.components.sensor import (
     SensorStateClass
 )
 
-from .const import DOMAIN, SENSOR_CLAMP_POWER_PATTERN, SENSOR_ID_PREFIX
+from .const import DOMAIN, SENSOR_CLAMP_POWER_PATTERN, SENSOR_ID_PREFIX, TIC_INDEX_LABELS, TIC_APPARENT_POWER_LABELS, TIC_INTENSITY_LABELS, TIC_VOLTAGE_LABELS
 
 _LOGGER = logging.getLogger(__name__)
 
+
+def setup_tic_sensors(coordinator):
+    entities_sensors = list()
+    data = coordinator.data.get("tics")
+    for i in range(1, 3):
+        tic_data = data.get(f"tic{i}")
+        if tic_data["ADCO"] != "Pas Dispo":
+            for label in TIC_INDEX_LABELS:
+                try:
+                    index_value = tic_data[label]
+                    int_index_value = int(index_value)
+                    if int_index_value > 0:
+                        entities_sensors.append(TicIndexSensor(coordinator, i, label=label))
+                except IndexError:
+                    _LOGGER.warning(f"Unable to find index with label {label}")
+                except ValueError:
+                    _LOGGER.warning(f"Unable to parse index value for index {label}, value is {index_value}")
+            for label in TIC_APPARENT_POWER_LABELS:
+                entities_sensors.append(TicApparentPowerSensor(coordinator, i, label=label))
+            for label in TIC_INTENSITY_LABELS:
+                entities_sensors.append(TicIntensitySensor(coordinator, i, label=label))
+            for label in TIC_VOLTAGE_LABELS:
+                entities_sensors.append(TicVoltageSensor(coordinator, i, label=label))
+    return entities_sensors
+            
 
 def setup_clamps_sensors(coordinator):
     entities_sensors = list()
@@ -59,6 +84,7 @@ async def async_setup_entry(
     # Create sensors for clamp objects
     entities_sensors = setup_clamps_sensors(coordinator)
     entities_sensors += setup_1wire_probe(coordinator)
+    entities_sensors += setup_tic_sensors(coordinator)
 
     async_add_entities(entities_sensors)
 
@@ -225,3 +251,145 @@ class Probe1WireSensor(BaseWesSensor):
         if clamp_data:
             self._state = clamp_data
             self.async_write_ha_state()
+
+class BaseTicSensor(BaseWesSensor):
+    _attr_device_class = SensorDeviceClass.ENERGY
+
+    def __init__(self, coordinator, id, **kwargs):
+        """Pass coordinator to CoordinatorEntity."""
+        super().__init__(coordinator, **kwargs)
+        self.__id = id
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        clamps_data = self.coordinator.data.get("tics")
+        clamp_data = clamps_data.get(f"tic{self.__id}")
+        if clamp_data:
+            entity_value = int(clamp_data.get(self.label))
+            if entity_value != self._state:
+                self._state = entity_value
+                self.async_write_ha_state()
+
+class TicIndexSensor(BaseTicSensor):
+    _attr_native_unit_of_measurement = UnitOfEnergy.WATT_HOUR
+    _attr_state_class = SensorStateClass.TOTAL_INCREASING
+
+    def __init__(self, coordinator, id, label=None, **kwargs):
+        """Pass coordinator to CoordinatorEntity."""
+        super().__init__(coordinator, id, **kwargs)
+        self.__id = id
+        self._state = None
+        self.label = label
+        if self.label not in TIC_INDEX_LABELS:
+            raise NotImplementedError(f"Label {self.label} is not supported yet, abort sensor creation")
+        self._attr_name = f"tic{self.__id} {self.label} index"
+        self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_tic{self.__id}_{self.label.lower()}_index"
+
+class TicSubscriptionTextSensor(BaseTicSensor):
+
+    def __init__(self, coordinator, id, label=None, **kwargs):
+        """Pass coordinator to CoordinatorEntity."""
+        super().__init__(coordinator, id, **kwargs)
+        self.__id = id
+        self._state = None
+        self.label = label
+        self._attr_name = f"tic{self.__id} {self.label}"
+        self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_tic{self.__id}_{self.label.lower()}"
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        clamps_data = self.coordinator.data.get("tics")
+        clamp_data = clamps_data.get(f"tic{self.__id}")
+        if clamp_data:
+            entity_value = clamp_data.get(self.label) # Avoid to parse the value as integer
+            if entity_value != self._state:
+                self._state = entity_value
+                self.async_write_ha_state()
+
+class TicApparentPowerSensor(BaseTicSensor):
+    _attr_native_unit_of_measurement = UnitOfApparentPower.VOLT_AMPERE
+    _attr_device_class = SensorDeviceClass.APPARENT_POWER
+
+    def __init__(self, coordinator, id, label=None, **kwargs):
+        """Pass coordinator to CoordinatorEntity."""
+        super().__init__(coordinator, id, **kwargs)
+        self.__id = id
+        self._state = None
+        self.label = label
+        self._attr_name = f"tic{self.__id} {self.label}"
+        self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_tic{self.__id}_{self.label.lower()}"
+
+class TicIntensitySensor(BaseTicSensor):
+    _attr_native_unit_of_measurement = UnitOfElectricCurrent.AMPERE
+    _attr_device_class = SensorDeviceClass.ENERGY
+
+    def __init__(self, coordinator, id, label=None, **kwargs):
+        """Pass coordinator to CoordinatorEntity."""
+        super().__init__(coordinator, id, **kwargs)
+        self.__id = id
+        self._state = None
+        self.label = label
+        self._attr_name = f"tic{self.__id} {self.label}"
+        self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_tic{self.__id}_{self.label.lower()}"
+
+class TicVoltageSensor(BaseTicSensor):
+    _attr_native_unit_of_measurement = UnitOfElectricPotential.VOLT
+    _attr_device_class = SensorDeviceClass.VOLTAGE
+
+    def __init__(self, coordinator, id, label=None, **kwargs):
+        """Pass coordinator to CoordinatorEntity."""
+        super().__init__(coordinator, id, **kwargs)
+        self.__id = id
+        self._state = None
+        self.label = label
+        self._attr_name = f"tic{self.__id} {self.label}"
+        self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_tic{self.__id}_{self.label.lower()}"
+
+
+# class TicProductionIndexSensor(BaseTicSensor):
+#     _attr_native_unit_of_measurement = UnitOfEnergy.WATT_HOUR
+#     _attr_state_class = SensorStateClass.TOTAL_INCREASING
+
+#     def __init__(self, coordinator, id=1, **kwargs):
+#         """Pass coordinator to CoordinatorEntity."""
+#         super().__init__(coordinator, **kwargs)
+#         self.__id = id
+#         self._state = None
+#         self._attr_name = f"tic{self.__id} production index"
+#         self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_clamp{self.__id}_production_index"
+
+#     @callback
+#     def _handle_coordinator_update(self) -> None:
+#         """Handle updated data from the coordinator."""
+#         clamps_data = self.coordinator.data.get("tics")
+#         clamp_data = clamps_data.get(f"tic{self.__id}")
+#         if clamp_data:
+#             index_name = f"PRODUCTION"
+#             entity_value = float(clamp_data.get(index_name))
+#             self._state = entity_value
+#             self.async_write_ha_state()
+
+# class TicInjectionIndexSensor(BaseTicSensor):
+#     _attr_native_unit_of_measurement = UnitOfEnergy.WATT_HOUR
+#     _attr_state_class = SensorStateClass.TOTAL_INCREASING
+
+#     def __init__(self, coordinator, id=1, **kwargs):
+#         """Pass coordinator to CoordinatorEntity."""
+#         super().__init__(coordinator, **kwargs)
+#         self.__id = id
+#         self._state = None
+#         self._attr_name = f"tic{self.__id} injection index"
+#         self._attr_unique_id = f"{SENSOR_ID_PREFIX}{self.serial_number}_clamp{self.__id}_injection_index"
+
+#     @callback
+#     def _handle_coordinator_update(self) -> None:
+#         """Handle updated data from the coordinator."""
+#         clamps_data = self.coordinator.data.get("tics")
+#         clamp_data = clamps_data.get(f"tic{self.__id}")
+#         if clamp_data:
+#             index_name = f"injection"
+#             entity_value = float(clamp_data.get(index_name))
+#             self._state = entity_value
+#             self.async_write_ha_state()

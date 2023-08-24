@@ -141,6 +141,31 @@ class WesApi:
         logger.debug(f"Toggle relay {id}")
         params = {f'frl': id}
         return await self.ajax_command(params)
+    
+    async def vs_is_on(self, id):
+        data = await self.fetch_sensor_data()
+        try:
+            relay_status = data["data"]["virtual_switch"][f"switch{id}"]
+            logger.debug(f"Found status {relay_status} for relay {id}")
+            if relay_status == "1":
+                return True
+            else:
+                return False
+        except KeyError:
+            logger.error(f"Unable to find status for relay{id}")
+        except:
+            raise
+
+    async def switch_vs(self, id, on=True):
+        value = "ON" if on else "OFF"
+        logger.debug(f"Switch relay {id} {value}")
+        params = {f'vs{id}': value}
+        return await self.ajax_command(params)
+            
+    async def toggle_vs(self, id):
+        logger.debug(f"Toggle relay {id}")
+        params = {f'fvs': id}
+        return await self.ajax_command(params)
             
     async def reset_server(self):
         try:
